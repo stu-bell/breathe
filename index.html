@@ -1,6 +1,7 @@
 <html>
+
 <head>
-  <style>
+  <style id="breathe_4353">
     body {
       margin: 0;
       min-height: 100vh;
@@ -9,42 +10,45 @@
       align-items: center;
       background: #1a2637;
     }
-    
+
     .breathing-circle {
       width: 20vh;
       height: 20vh;
-      background: radial-gradient(
-        circle at 35% 35%,
-        #a5d8ff 0%,
-        rgba(129, 212, 250, 0.9) 25%,
-        rgba(100, 181, 246, 0.8) 50%,
-        rgba(79, 159, 227, 0.6) 100%
-      );
+      background: radial-gradient(circle at 35% 35%,
+          #8dcdff 0%,
+          rgba(129, 212, 250, 0.9) 25%,
+          rgba(100, 181, 246, 0.8) 50%,
+          rgba(79, 159, 227, 0.6) 100%);
       border-radius: 50%;
       /* filter: blur(1px); */
       /* box-shadow:  */
       /*   0 0 30px rgba(100, 181, 246, 0.3), */
       /*   inset -5px -5px 20px rgba(0, 0, 0, 0.2), */
       /*   inset 5px 5px 20px rgba(255, 255, 255, 0.2); */
-      animation: breathe 9s infinite;
+      animation: breathe 11s infinite;
     }
 
     @keyframes breathe {
-      0%, 100% {
+
+      0%,
+      100% {
         /* Inhale */
         transform: scale(1);
         animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
       }
+
       35% {
         /* Hold */
         transform: scale(2);
         animation-timing-function: linear;
       }
+
       40% {
         /* Exhale */
         transform: scale(2);
         animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
       }
+
       90% {
         /* Hold */
         transform: scale(1);
@@ -53,7 +57,41 @@
     }
   </style>
 </head>
+
 <body>
   <div class="breathing-circle"></div>
+  <script>
+    // TODO: function to take number of seconds of each stage of box breathing, calc %s, and update the animation duration with the total 
+    // update keyframe offsets for breathing animation to configure box breathing
+    function updateKeyframes(inhale, hold1, exhale) {
+      const ss = Array.from(document.styleSheets).find(sheet => sheet.ownerNode.id === 'breathe_4353')
+      ss.deleteRule(Array.from(ss.cssRules).findIndex(x => x.cssText.startsWith('@keyframes breathe')))
+      ss.insertRule(` @keyframes breathe {
+      0%, 100% {
+        /* Inhale */
+        transform: scale(1);
+        animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      ${inhale}% {
+        /* Hold */
+        transform: scale(2);
+        animation-timing-function: linear;
+      }
+      ${hold1}% {
+        /* Exhale */
+        transform: scale(2);
+        animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      ${exhale}% {
+        /* Hold */
+        transform: scale(1);
+        animation-timing-function: linear;
+      }
+        }`)
+    }
+
+    // document.addEventListener('DOMContentLoaded', updateKeyframes(30, 40, 90))
+  </script>
 </body>
+
 </html>
