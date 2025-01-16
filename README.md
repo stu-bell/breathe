@@ -1,2 +1,4 @@
 # breathe
-simple breathing app
+Simple mindfulness practice app
+
+https://stu-bell.github.io/breathe
