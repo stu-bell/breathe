@@ -61,6 +61,83 @@
 <body>
   <div class="breathing-circle"></div>
   <script>
+    function playTones(tones = [{ frequency: 108, gain: 1 }], duration = 1000) {
+      console.log('playing tone')
+      fadeDuration = 0.2
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const masterGain = audioContext.createGain();
+      masterGain.connect(audioContext.destination);
+
+      // Create oscillators for each tone
+      const oscillators = tones.map(tone => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        // Configure oscillator
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(tone.frequency, audioContext.currentTime);
+
+        // Set gain for this tone
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(tone.gain, audioContext.currentTime + fadeDuration);
+        if (duration) {
+          gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + (duration / 1000));
+        }
+
+        // Connect this oscillator to its gain node, then to master gain
+        oscillator.connect(gainNode);
+        gainNode.connect(masterGain);
+
+        // Start the oscillator
+        oscillator.start();
+        if (duration) {
+          oscillator.stop(audioContext.currentTime + (duration / 1000));
+        }
+
+        return { oscillator, gainNode };
+      });
+
+      const contoller = {
+        stop: () => {
+          console.log('stop tones')
+          oscillators.forEach(({ oscillator, gainNode }) => {
+            masterGain.gain.cancelScheduledValues(audioContext.currentTime);
+            masterGain.gain.linearRampToValueAtTime(0, audioContext.currentTime + fadeDuration);
+            setTimeout(() => oscillator.stop(), fadeDuration * 2100);
+          });
+        }
+      };
+      return contoller
+    }
+
+    let tones;
+    isPlaying = false;
+    toggleTones = () => {
+      if (tones && isPlaying) {
+        tones.stop()
+        isPlaying = false;
+      } else {
+      tones = playTones([
+        { frequency: 108, gain: 0.5 },  // Base tone
+        { frequency: 162, gain: 0.25 }, // Higher tone at half volume
+        { frequency: 216, gain: 0.15 }  // Even higher tone at lower volume
+      ], duration = 0);
+      // setTimeout(tones.stop, 5000)
+      isPlaying = true;
+      }
+    }
+
+    document.body.addEventListener('click', (e) => {
+      toggleTones()
+    });
+    // document.body.addEventListener('touchstart', (e) => {
+    //   // Prevent default to avoid double-firing on some devices
+    //   e.preventDefault();
+    //   console.log('tap')
+    //   toggleTones()      
+    // });
+  </script>
+  <script>
     // TODO: function to take number of seconds of each stage of box breathing, calc %s, and update the animation duration with the total 
     // update keyframe offsets for breathing animation to configure box breathing
     function updateKeyframes(inhale, hold1, exhale) {
