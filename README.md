@@ -9,7 +9,7 @@ PWA/ offline
 show controls on load and on tap/click, then fade them away
 Intro text to breathe with the circle
 slider for duration 
-Audio track/ loop - need to include attribution (below)
+Add audio attribution to app (see below)
 donation button (maybe in a menu rather than always visible)
 colour themes (in the menu)
 
