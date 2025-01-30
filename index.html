@@ -70,35 +70,61 @@
   </div>
   <div class="breathing-circle"></div>
 
-  <audio id="audio1" class="audio-hidden" controls>
-    <source src="/assets/audio2.m4a" type="audio/mp4">
-  </audio>
-  <audio id="audio2" class="audio-hidden" controls>
-    <source src="/assets/audio2.m4a" type="audio/mp4">
-  </audio>
-
   <script>
-    const audio1 = document.getElementById('audio1');
-    const audio2 = document.getElementById('audio2');
-    const play = () => document.getElementById('audio1').play();
-    document.body.addEventListener('click', play());
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    let buffer;
+    let source;
+    let gainNode;
+    // timeout should be cancelled when audio paused
+    let crossfadeTimeout;
+    // doCrossfade ramps the volume of the audio track
+    const doCrossfade = true;
+    const crossfadeDuration = 2; // duration of the crossfade in seconds
 
-    // start playing alternate player when current player is nearly finished
-    audio1.addEventListener('timeupdate', (e)=> {
-      const nearlyFinished = (audio1.duration - audio1.currentTime) < 0.5
-      if (nearlyFinished && audio2.paused) {
-        audio2.currentTime = 4;
-        audio2.play();
-      }
-    })
+    // Load the audio file
+    fetch('/assets/audio4.m4a')
+      .then(response => response.arrayBuffer())
+      .then(data => audioContext.decodeAudioData(data))
+      .then(decodedData => {
+        buffer = decodedData;
+        playAudio();
+      });
 
-    audio2.addEventListener('timeupdate', (e)=> {
-      const nearlyFinished = (audio2.duration - audio2.currentTime) < 0.5
-      if (nearlyFinished && audio1.paused) {
-        audio1.currentTime = 4;
-        audio1.play();
+    function playAudio() {
+      source = audioContext.createBufferSource();
+      gainNode = audioContext.createGain();
+
+      source.buffer = buffer;
+      source.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      if (doCrossfade) {
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(1, audioContext.currentTime + crossfadeDuration);
       }
-    })
+      source.start(0);
+
+      // Schedule crossfade before the end of the track
+      const crossfadeStartTime = buffer.duration - crossfadeDuration;
+      crossfadeTimeout = setTimeout(() => {
+        if (doCrossfade){
+          gainNode.gain.setValueAtTime(1, audioContext.currentTime);
+          gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + crossfadeDuration);
+        }
+        playAudio();
+      }, crossfadeStartTime * 1000);
+    }
+
+    document.body.addEventListener('click', () => {
+      if (audioContext.state === 'suspended') {
+        playAudio();
+      }
+    });
+
+    document.body.addEventListener('pause', () => {
+      // cancel timeout for next track
+      clearTimeout(crossfadeTimeout);
+    });
   </script>
 
   <script>
