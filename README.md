@@ -9,7 +9,7 @@ PWA/ offline
 show controls on load and on tap/click, then fade them away
 Intro text to breathe with the circle
 slider for duration 
-audio tones (branch audio)
+Audio track/ loop - need to include attribution (below)
 donation button (maybe in a menu rather than always visible)
 colour themes (in the menu)
 
@@ -19,3 +19,6 @@ BUGS
 
 WON'T DO
 - embed youtube audio? Can you do this in a way without ads? Low value, user can just play their own music in the background if they wanted to...
+
+Audio attribution: 
+- Audio1: 'Aurora' by Scott Buckley - released under CC-BY 4.0. www.scottbuckley.com.au
