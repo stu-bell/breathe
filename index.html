@@ -70,26 +70,35 @@
   </div>
   <div class="breathing-circle"></div>
 
-  <audio id="audio" class="audio-hidden" controls loop>
-    <source src="/assets/audio3.m4a" type="audio/mp4">
+  <audio id="audio1" class="audio-hidden" controls>
+    <source src="/assets/audio2.m4a" type="audio/mp4">
+  </audio>
+  <audio id="audio2" class="audio-hidden" controls>
+    <source src="/assets/audio2.m4a" type="audio/mp4">
   </audio>
 
   <script>
-    const audio = document.getElementById('audio');
-    const play = () => document.getElementById('audio').play();
+    const audio1 = document.getElementById('audio1');
+    const audio2 = document.getElementById('audio2');
+    const play = () => document.getElementById('audio1').play();
     document.body.addEventListener('click', play());
-    const restartTime = 4;
-    audio.addEventListener('timeupdate', (e) => {
-      const nearlyFinished = (audio.duration - audio.currentTime) < 0.3
-      if (nearlyFinished) {
-        audio.currentTime = restartTime;
+
+    // start playing alternate player when current player is nearly finished
+    audio1.addEventListener('timeupdate', (e)=> {
+      const nearlyFinished = (audio1.duration - audio1.currentTime) < 0.5
+      if (nearlyFinished && audio2.paused) {
+        audio2.currentTime = 4;
+        audio2.play();
       }
     })
-    audio.addEventListener('ended', (e) => {
-      audio.currentTime = restartTime;
-      audio.play();
-    })
 
+    audio2.addEventListener('timeupdate', (e)=> {
+      const nearlyFinished = (audio2.duration - audio2.currentTime) < 0.5
+      if (nearlyFinished && audio1.paused) {
+        audio1.currentTime = 4;
+        audio1.play();
+      }
+    })
   </script>
 
   <script>
