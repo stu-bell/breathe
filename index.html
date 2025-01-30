@@ -1,65 +1,8 @@
 <html>
 
 <head>
-  <style id="breathe_4353">
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #1a2637;
-    }
-
-    .breathing-circle {
-      width: 20vh;
-      height: 20vh;
-      background: radial-gradient(circle at 35% 35%,
-          #8dcdff 0%,
-          rgba(129, 212, 250, 0.9) 25%,
-          rgba(100, 181, 246, 0.8) 50%,
-          rgba(79, 159, 227, 0.6) 100%);
-      border-radius: 50%;
-      /* filter: blur(1px); */
-      box-shadow: 
-        0 0 10px rgba(100, 181, 246, 0.3);
-        /* inset -2px -2px 4px rgba(0, 0, 0, 0.2), */
-        /* inset 2px 2px 4px rgba(255, 255, 255, 0.2); */
-      animation: breathe 9s infinite;
-    }
-
-    @keyframes breathe {
-
-      0%,
-      100% {
-        /* Inhale */
-        transform: scale(1);
-        animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-      }
-
-      35% {
-        /* Hold */
-        transform: scale(2);
-        animation-timing-function: linear;
-      }
-
-      40% {
-        /* Exhale */
-        transform: scale(2);
-        animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-      }
-
-      90% {
-        /* Hold */
-        transform: scale(1);
-        animation-timing-function: linear;
-      }
-    }
-
-  .audio-hidden {
-    display: none
-    }
-  </style>
+  <style id="breathe_4353"></style>
+ <link rel="stylesheet" type="text/css" href="assets/style.css">
 </head>
 
 <body>
@@ -68,111 +11,10 @@
     <p>Your browser does not support the required animations.</p>
     <p>Don't let that stop your breathing practice though. We're rooting for you ❤️</p>
   </div>
+
   <div class="breathing-circle"></div>
 
-  <script>
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    let buffer;
-    let source;
-    let gainNode;
-    // timeout should be cancelled when audio paused
-    let crossfadeTimeout;
-    const crossfadeDuration = 2; // duration of the crossfade in seconds
-
-    // Load the audio file
-    fetch('/assets/audio1.m4a')
-      .then(response => response.arrayBuffer())
-      .then(data => audioContext.decodeAudioData(data))
-      .then(decodedData => {
-        buffer = decodedData;
-        playAudio();
-      });
-
-    function playAudio() {
-      source = audioContext.createBufferSource();
-      gainNode = audioContext.createGain();
-
-      source.buffer = buffer;
-      source.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-
-      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(1, audioContext.currentTime + crossfadeDuration);
-
-      source.start(0);
-
-      // Schedule crossfade before the end of the track
-      const crossfadeStartTime = buffer.duration - crossfadeDuration;
-      crossfadeTimeout = setTimeout(() => {
-        gainNode.gain.setValueAtTime(1, audioContext.currentTime);
-        gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + crossfadeDuration);
-        playAudio();
-      }, crossfadeStartTime * 1000);
-    }
-
-    document.body.addEventListener('click', () => {
-      if (audioContext.state === 'suspended') {
-        playAudio();
-      }
-    });
-
-    // cancel timeout for next crossfade
-    document.body.addEventListener('pause', () => {
-      clearTimeout(crossfadeTimeout);
-    });
-  </script>
-
-  <script>
-    function supportsKeyframeAnimations() {
-      const prefixes = ['', 'webkit', 'moz', 'o', 'ms'];
-      const element = document.createElement('div');
-      for (const prefix of prefixes) {
-        const prop = prefix ? prefix + 'Animation' : 'animation';
-        if (element.style[prop] !== undefined) {
-          return true;
-        }
-      }
-      return false;
-    }
-    document.addEventListener('DOMContentLoaded', () => {
-      if (supportsKeyframeAnimations()) {
-        document.getElementById('unsupported_message').remove();
-      }
-    })
-  </script>
-  <script>
-    // TODO: function to take number of seconds of each stage of box breathing, calc %s, and update the animation duration with the total 
-    // update keyframe offsets for breathing animation to configure box breathing
-    function updateKeyframes(inhale, hold1, exhale) {
-      const ss = Array.from(document.styleSheets).find(sheet => sheet.ownerNode.id === 'breathe_4353')
-      ss.deleteRule(Array.from(ss.cssRules).findIndex(x => x.cssText.startsWith('@keyframes breathe')))
-      ss.insertRule(` @keyframes breathe {
-      0%, 100% {
-        /* Inhale */
-        transform: scale(1);
-        animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-      }
-      ${inhale}% {
-        /* Hold */
-        transform: scale(2);
-        animation-timing-function: linear;
-      }
-      ${hold1}% {
-        /* Exhale */
-        transform: scale(2);
-        animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-      }
-      ${exhale}% {
-        /* Hold */
-        transform: scale(1);
-        animation-timing-function: linear;
-      }
-        }`)
-    }
-
-    // document.addEventListener('DOMContentLoaded', updateKeyframes(30, 40, 90))
-  </script>
-
+  <script src="assets/keyframes.js"></script>
+  <script src="assets/audio.js"></script>
 </body>
-
 </html>
