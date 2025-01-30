@@ -11,7 +11,7 @@ const audioToggleButton = document.getElementById('audio-toggle-button');
 let buttonTimeout;
 
 // Load the audio file
-fetch('breathe/assets/audio1.m4a')
+fetch('assets/audio1.m4a')
   .then(response => response.arrayBuffer())
   .then(data => audioContext.decodeAudioData(data))
   .then(decodedData => {
