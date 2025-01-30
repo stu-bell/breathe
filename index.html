@@ -77,8 +77,6 @@
     let gainNode;
     // timeout should be cancelled when audio paused
     let crossfadeTimeout;
-    // doCrossfade ramps the volume of the audio track
-    const doCrossfade = true;
     const crossfadeDuration = 2; // duration of the crossfade in seconds
 
     // Load the audio file
@@ -98,19 +96,16 @@
       source.connect(gainNode);
       gainNode.connect(audioContext.destination);
 
-      if (doCrossfade) {
-        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-        gainNode.gain.linearRampToValueAtTime(1, audioContext.currentTime + crossfadeDuration);
-      }
+      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(1, audioContext.currentTime + crossfadeDuration);
+
       source.start(0);
 
       // Schedule crossfade before the end of the track
       const crossfadeStartTime = buffer.duration - crossfadeDuration;
       crossfadeTimeout = setTimeout(() => {
-        if (doCrossfade){
-          gainNode.gain.setValueAtTime(1, audioContext.currentTime);
-          gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + crossfadeDuration);
-        }
+        gainNode.gain.setValueAtTime(1, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + crossfadeDuration);
         playAudio();
       }, crossfadeStartTime * 1000);
     }
@@ -121,8 +116,8 @@
       }
     });
 
+    // cancel timeout for next crossfade
     document.body.addEventListener('pause', () => {
-      // cancel timeout for next track
       clearTimeout(crossfadeTimeout);
     });
   </script>
