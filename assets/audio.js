@@ -4,7 +4,7 @@ let source;
 let gainNode;
 // timeout should be cancelled when audio paused
 let crossfadeTimeout;
-const crossfadeDuration = 2; // duration of the crossfade in seconds
+const crossfadeDuration = 3; // duration of the crossfade in seconds
 
 let isPlaying = false;
 const audioToggleButton = document.getElementById('audio-toggle-button');
