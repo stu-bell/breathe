@@ -74,7 +74,7 @@ function toggleAudio() {
   } else {
     playAudio();
   }
-  resetButtonTimeout();
+  // resetButtonTimeout();
 }
 
 // function resetButtonTimeout() {

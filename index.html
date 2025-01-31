@@ -6,17 +6,24 @@
 </head>
 
 <body>
-  <div id="unsupported_message">
-    <h1>Sorry!</h1>
-    <p>Your browser does not support the required animations.</p>
-    <p>Don't let that stop your breathing practice though. We're rooting for you ❤️</p>
-  </div>
-
   <div class="breathing-circle"></div>
 
   <button id="audio-toggle-button">
     <img src="assets/audio-icon.svg" alt="Toggle Audio">
   </button>
+
+  <div id="unsupported_message" class="hidden">
+    <h1>Sorry!</h1>
+    <p>Your browser does not support the required animations.</p>
+    <p>Don't let that stop your breathing practice though. We're rooting for you ❤️</p>
+  </div>
+
+  <div id="js_required">
+    <p>Please enable javascript</p>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => document.getElementById('js_required').remove());
+  </script>
 
   <script src="assets/keyframes.js"></script>
   <script src="assets/audio.js"></script>

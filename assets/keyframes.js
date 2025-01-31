@@ -10,8 +10,8 @@ function supportsKeyframeAnimations() {
   return false;
 }
 document.addEventListener("DOMContentLoaded", () => {
-  if (supportsKeyframeAnimations()) {
-    document.getElementById("unsupported_message").remove();
+  if (!supportsKeyframeAnimations()) {
+    document.getElementById("unsupported_message").classList.remove('hidden')
   }
 });
 
