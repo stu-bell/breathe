@@ -18,6 +18,28 @@ fetch('assets/audio1.m4a')
     buffer = decodedData;
   });
 
+function startMediaSession() {
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: 'breathe',
+      // artist: 'Artist Name',
+      // album: 'Album Name',
+      // artwork: [
+      //   { src: 'path-to-image.jpg', sizes: '96x96', type: 'image/jpeg' },
+      // ]
+    });
+    navigator.mediaSession.setActionHandler('play', () => {
+      playAudio();
+    });
+    navigator.mediaSession.setActionHandler('pause', () => {
+      stopAudio();
+    });
+    navigator.mediaSession.setActionHandler('stop', () => {
+      stopAudio();
+    });
+  }
+}
+
 function playAudio() {
   source = audioContext.createBufferSource();
   source.buffer = buffer;
@@ -29,6 +51,7 @@ function playAudio() {
   gainNode.gain.linearRampToValueAtTime(1, audioContext.currentTime + crossfadeDuration);
 
   source.start(0);
+  isPlaying = true;
 
   // Schedule crossfade before the end of the track
   const crossfadeStartTime = buffer.duration - crossfadeDuration;
@@ -39,14 +62,17 @@ function playAudio() {
   }, crossfadeStartTime * 1000);
 }
 
+function stopAudio() {
+  source.stop()
+  clearTimeout(crossfadeTimeout);
+  isPlaying = false;
+}
+
 function toggleAudio() {
   if (isPlaying) {
-    source.stop();
-    clearTimeout(crossfadeTimeout);
-    isPlaying = false;
+    stopAudio();
   } else {
     playAudio();
-    isPlaying = true;
   }
   resetButtonTimeout();
 }
@@ -59,7 +85,10 @@ function toggleAudio() {
 //   }, 4000);
 // }
 
-audioToggleButton.addEventListener('click', toggleAudio);
+audioToggleButton.addEventListener('click', () => {
+  toggleAudio();
+  startMediaSession();
+});
 
 // cancel timeout for next crossfade
 document.body.addEventListener('pause', () => {
