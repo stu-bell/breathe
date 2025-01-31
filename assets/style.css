@@ -52,6 +52,10 @@ body {
   }
 }
 
+
+.hidden {
+  display: none;
+}
 .audio-hidden {
   display: none;
 }
