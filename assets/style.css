@@ -77,3 +77,14 @@ body {
     width: 24px;
     height: 24px;
   }
+
+@media (max-width: 600px) {
+  #audio-toggle-button {
+    padding: 20px;
+  }
+
+  #audio-toggle-button img {
+    width: 32px;
+    height: 32px;
+  }
+}
