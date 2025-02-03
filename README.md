@@ -12,6 +12,7 @@ slider for duration
 Add audio attribution to app (see below)
 donation button (maybe in a menu rather than always visible)
 colour themes (in the menu)
+Browser Audio controls
 
 BUGS
 - container must not be zoomed/moved
