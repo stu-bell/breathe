@@ -27,15 +27,15 @@ function startMediaSession() {
         { src: 'assets/blue_sphere.png', sizes: '512x512', type: 'image/png' },
       ]
     });
-    navigator.mediaSession.setActionHandler('play', () => {
-      playAudio();
-    });
-    navigator.mediaSession.setActionHandler('pause', () => {
-      stopAudio();
-    });
-    navigator.mediaSession.setActionHandler('stop', () => {
-      stopAudio();
-    });
+    navigator.mediaSession.setActionHandler('play', playAudio);
+    navigator.mediaSession.setActionHandler('pause', stopAudio);
+    navigator.mediaSession.setActionHandler('stop', stopAudio);
+  }
+}
+
+function updateMediaSessionPlaybackState() {
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
   }
 }
 
@@ -51,6 +51,7 @@ function playAudio() {
 
   source.start(0);
   isPlaying = true;
+  updateMediaSessionPlaybackState();
 
   // Schedule crossfade before the end of the track
   const crossfadeStartTime = buffer.duration - crossfadeDuration;
@@ -65,6 +66,7 @@ function stopAudio() {
   source.stop();
   clearTimeout(crossfadeTimeout);
   isPlaying = false;
+  updateMediaSessionPlaybackState();
 }
 
 function toggleAudio() {
@@ -73,6 +75,7 @@ function toggleAudio() {
   } else {
     playAudio();
   }
+  startMediaSession();
   // resetButtonTimeout();
 }
 
@@ -84,10 +87,7 @@ function toggleAudio() {
 //   }, 4000);
 // }
 
-audioToggleButton.addEventListener('click', () => {
-  toggleAudio();
-  startMediaSession();
-});
+audioToggleButton.addEventListener('click', toggleAudio);
 
 // cancel timeout for next crossfade
 document.body.addEventListener('pause', () => {
