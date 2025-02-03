@@ -16,6 +16,7 @@ fetch('assets/audio1.m4a')
   .then(data => audioContext.decodeAudioData(data))
   .then(decodedData => {
     buffer = decodedData;
+    audioToggleButton.classList.remove('hidden');
   });
 
 
