@@ -9,6 +9,7 @@ const crossfadeDuration = 4; // duration of the crossfade in seconds
 let isPlaying = false;
 const audioToggleButton = document.getElementById('audio-toggle-button');
 let buttonTimeout;
+const audioEl = document.getElementById('audio-element');
 
 // Load the audio file
 fetch('assets/audio1.m4a')
@@ -16,7 +17,9 @@ fetch('assets/audio1.m4a')
   .then(data => audioContext.decodeAudioData(data))
   .then(decodedData => {
     buffer = decodedData;
+    startMediaSession();
   });
+
 
 function startMediaSession() {
   if ('mediaSession' in navigator) {
@@ -40,11 +43,14 @@ function updateMediaSessionPlaybackState() {
 }
 
 function playAudio() {
+  console.log('playig')
   source = audioContext.createBufferSource();
   source.buffer = buffer;
   gainNode = audioContext.createGain();
   source.connect(gainNode);
-  gainNode.connect(audioContext.destination);
+  const destination = audioContext.createMediaStreamDestination();
+  gainNode.connect(destination);
+  audioEl.srcObject = destination.stream;
 
   gainNode.gain.setValueAtTime(0, audioContext.currentTime);
   gainNode.gain.linearRampToValueAtTime(1, audioContext.currentTime + crossfadeDuration);
@@ -52,6 +58,7 @@ function playAudio() {
   source.start(0);
   isPlaying = true;
   updateMediaSessionPlaybackState();
+  audioEl.play();
 
   // Schedule crossfade before the end of the track
   const crossfadeStartTime = buffer.duration - crossfadeDuration;
@@ -60,6 +67,8 @@ function playAudio() {
     gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + crossfadeDuration);
     playAudio();
   }, crossfadeStartTime * 1000);
+
+  startMediaSession();
 }
 
 function stopAudio() {
@@ -75,7 +84,6 @@ function toggleAudio() {
   } else {
     playAudio();
   }
-  startMediaSession();
   // resetButtonTimeout();
 }
 
@@ -94,3 +102,5 @@ document.body.addEventListener('pause', () => {
   clearTimeout(crossfadeTimeout);
   isPlaying = false;
 });
+
+
