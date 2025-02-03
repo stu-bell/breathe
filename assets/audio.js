@@ -23,10 +23,9 @@ function startMediaSession() {
     navigator.mediaSession.metadata = new MediaMetadata({
       title: 'breathe',
       // artist: 'Artist Name',
-      // album: 'Album Name',
-      // artwork: [
-      //   { src: 'path-to-image.jpg', sizes: '96x96', type: 'image/jpeg' },
-      // ]
+      artwork: [
+        { src: 'assets/blue_sphere.png', sizes: '512x512', type: 'image/png' },
+      ]
     });
     navigator.mediaSession.setActionHandler('play', () => {
       playAudio();
@@ -63,7 +62,7 @@ function playAudio() {
 }
 
 function stopAudio() {
-  source.stop()
+  source.stop();
   clearTimeout(crossfadeTimeout);
   isPlaying = false;
 }
